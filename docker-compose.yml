@@ -1,0 +1,58 @@
+django:
+    restart: always
+    build: django/
+    command: gunicorn locum.wsgi:application -w 4 -b :8000
+    links:
+        - redis
+        - elasticsearch
+        - postgres
+        - rabbitmq
+
+nginx:
+  restart: always
+  build: nginx/
+  ports:
+    - "8080:80"
+  volumes:
+    - /www/static
+  volumes_from:
+    - django
+  links:
+    - django
+
+postgres:
+  restart: always
+  image: postgres:latest
+  volumes_from:
+    - data
+
+elasticsearch:
+    ports:
+      - "9200:9200"
+    restart: always
+    build: elasticsearch/
+
+redis:
+    restart: always
+    image: redis
+
+rabbitmq:
+    restart: always
+    image: rabbitmq
+
+celery:
+    restart: always
+    build: django/
+    user: celery
+    command: celery worker -A locum -B -l info
+    links:
+        - redis
+        - elasticsearch
+        - postgres
+        - rabbitmq
+
+data:
+  image: postgres:latest
+  volumes:
+    - /var/lib/postgresql
+  command: "true"
