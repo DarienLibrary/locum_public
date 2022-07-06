@@ -8,7 +8,7 @@ Django==1.8.3
 djangorestframework==3.2.4
 elasticsearch==1.6.0
 gunicorn==19.4.1
-html5lib==0.999
+html5lib==0.999999999
 kombu==3.0.26
 psycopg2==2.6.1
 pymssql==2.1.3
